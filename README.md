@@ -10,7 +10,7 @@ The Rise Python SDK is cross platform library based on Rise (https://rise.vision
 1. Requests
 
 
-## Example
+## Examples
 
 All the APIs are designed to be easy to use. All request results returns as dictionaries.
 
@@ -41,6 +41,8 @@ version = api.peers.version()['version']
 
 print(block_height, version)
 ```
+
+# Working with multiple nodes
 
 In some cases you need to connect to multiple nodes.
 
