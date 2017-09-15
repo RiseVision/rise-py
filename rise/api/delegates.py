@@ -1,8 +1,13 @@
-from api.base import BaseAPI
+"""
+Module provides to access Rise Delegates API methods.
+"""
+from .base import BaseAPI
 
 
 class DelegatesAPI(BaseAPI):
-
+    """
+    DelegatesAPI object provides access to Rise Delegates API methods.
+    """
     def enable(self, secret, username, second_secret=None):
         return self._put('/delegates', secret=secret, username=username, secondSecret=second_secret)
 

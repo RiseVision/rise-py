@@ -1,7 +1,13 @@
-from api.base import BaseAPI
+"""
+Module provides to access Rise Peers API methods.
+"""
+from .base import BaseAPI
 
 
 class PeersAPI(BaseAPI):
+    """
+    PeersAPI object provides access to Rise Peers API methods.
+    """
     def get_list(self, **query):
         return self._get('/peers', **query)
 

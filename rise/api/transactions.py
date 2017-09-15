@@ -1,7 +1,13 @@
-from api.base import BaseAPI
+"""
+Module provides to access Rise Transactions API methods.
+"""
+from .base import BaseAPI
 
 
 class TransactionsAPI(BaseAPI):
+    """
+    TransactionsAPI object provides access to Rise Transactions API methods.
+    """
     def get(self, id):
         return self._get('/transactions/get', id=id)
 

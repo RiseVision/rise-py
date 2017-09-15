@@ -1,7 +1,13 @@
-from api.base import BaseAPI
+"""
+Module provides to access Rise Multi-Signatures API methods.
+"""
+from .base import BaseAPI
 
 
 class MultiSignaturesAPI(BaseAPI):
+    """
+    MultiSignaturesAPI object provides access to Rise Multi-Signatures API methods.
+    """
     def get_ending(self, public_key):
         return self._get('/multisignatures/pending', publicKey=public_key)
 

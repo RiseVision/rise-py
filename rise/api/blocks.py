@@ -1,8 +1,13 @@
-from api.base import BaseAPI
+"""
+Module provides to access Rise Blocks API methods.
+"""
+from .base import BaseAPI
 
 
 class BlocksAPI(BaseAPI):
-
+    """
+    BlocksAPI object provides access to Rise Blocks API methods.
+    """
     def get_fee_schedule(self):
         return self._get('/blocks/getFees')
 

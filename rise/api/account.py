@@ -1,8 +1,14 @@
-from api.base import BaseAPI
+"""
+Module provides to access Rise Accounts API methods.
+"""
+
+from .base import BaseAPI
 
 
 class AccountsAPI(BaseAPI):
-
+    """
+    AccountsAPI object provides access to Rise Accounts API methods.
+    """
     def open(self, secret):
         """
         Opens a new account using the specified secret string
