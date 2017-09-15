@@ -42,7 +42,7 @@ version = api.peers.version()['version']
 print(block_height, version)
 ```
 
-# Working with multiple nodes
+### Working with multiple nodes
 
 In some cases you need to connect to multiple nodes.
 
