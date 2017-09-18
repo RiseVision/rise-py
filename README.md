@@ -1,10 +1,10 @@
-# Rise Python SDK
+# Rise Python API Library
 
 # Introduction
 
 Rise meets Python
 
-The Rise Python SDK is cross platform library based on Rise (https://rise.vision) and entirely rewritten in Python.
+The Rise Python Library is a cross platform library based on Rise (https://rise.vision) and entirely rewritten in Python.
 
 #### Third party dependencies
 1. Requests
