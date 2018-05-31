@@ -13,7 +13,7 @@ class TransportAPI(BaseAPI):
         Construct Rise API wrapper.
 
         :param node_address: URL of Rise node. E. g.: 'http://127.0.0.1:5566'
-        :param transport_headers: header for API requset. Must contain nethash, port and version.
+        :param transport_headers: header for API request. Must contain nethash, port and version.
         """
         super().__init__(node_address)
         self.headers = transport_headers
