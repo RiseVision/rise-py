@@ -11,22 +11,22 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='pyrise',
+    name='risesdk',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1',
+    version='0.8.0',
 
-    description='Rise SDK made in python',
+    description='APIs for interacting with the RISE blockchain',
     long_description=long_description,
 
     # The project's main homepage.
-    url='',
+    url='https://rise.vision/',
 
     # Author details
-    author='',
-    author_email='',
+    author='Mart Roosmaa',
+    author_email='mart@rise.vision',
 
     # Choose your license
     license='MIT',
@@ -52,10 +52,11 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 
     # What does your project relate to?
-    keywords='rise sdk risesdk vision crypto currency cryptocurrency risevision alt coin altcoin',
+    keywords='rise sdk risesdk crypto currency cryptocurrency risevision altcoin',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().

@@ -1,40 +1,27 @@
-# Rise Python API Library
+# RISE SDK (Python)
 
-# Introduction
+Python library that provides APIs for interfacing with the RISE blockchain.
 
-Rise meets Python
+## Getting started
 
-The Rise Python Library is a cross platform library based on Rise (https://rise.vision) and entirely rewritten in Python.
+The simplest way to get started is to use pip to install this library:
 
-#### Third party dependencies
-1. Requests
-
-
-## Examples
-
-All the APIs are designed to be easy to use. All request results returns as dictionaries.
-
-For example you can open a new account by doing:
-
-```python
-from rise import RiseAPI
-
-api = RiseAPI('http://127.0.0.1:5566')
-
-result = api.accounts.open('secret')
-
-if result['success']:
-    print(result['account'])
-else:
-    print(result['error'])
 ```
+pip install risesdk
+```
+
+## Usage examples
+
+All the APIs are designed to be easy to use. All request results are returned as dictionaries.
 
 Every API method can be accessed via single RiseAPI object:
 
 ```python
-from rise import RiseAPI
+from risesdk import RiseAPI
 
-api = RiseAPI('http://127.0.0.1:5566')
+# In production you should use your own node, as there are no stability
+# guarantees for the public wallet node at wallet.rise.vision
+api = RiseAPI('https://wallet.rise.vision')
 
 block_height = api.blocks.get_height()['height']
 version = api.peers.version()['version']
@@ -47,7 +34,7 @@ print(block_height, version)
 In some cases you need to connect to multiple nodes.
 
 ```python
-from rise import RiseAPI
+from risesdk import RiseAPI
 
 api1 = RiseAPI('http://node1:5566')
 api2 = RiseAPI('http://node2:5566')
