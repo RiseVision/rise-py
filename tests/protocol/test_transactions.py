@@ -1,6 +1,5 @@
 import unittest
-from risesdk.protocol.primitives import PublicKey, Address, Amount
-from risesdk.protocol.transactions import SendTx
+from risesdk.protocol import PublicKey, Address, Amount, SendTx
 
 class TestTransactions(unittest.TestCase):
     def test_something(self):

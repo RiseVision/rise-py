@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime
-from risesdk.protocol.primitives import PublicKey, Signature, Address, Timestamp, Amount
+from risesdk.protocol import PublicKey, Signature, Address, Timestamp, Amount
 
 class TestTimestamp(unittest.TestCase):
     def test_negative(self):
