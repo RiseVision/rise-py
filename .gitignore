@@ -5,4 +5,5 @@ lib
 pip-selfcheck.json
 dist
 risesdk.egg-info
+.mypy_cache
 *.pyc
