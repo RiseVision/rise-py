@@ -43,9 +43,8 @@ class Amount(int):
         return Decimal(self) / UNIT_SCALE
 
 class Address(str):
-    def __new__(cls, *args, **kwargs):
-        value = super().__new__(cls, *args, **kwargs)
-        value = value.upper()
+    def __new__(cls, address):
+        value = super().__new__(cls, address.upper())
         if not value.endswith('R'):
             raise ValueError('Invalid address')
         return value
