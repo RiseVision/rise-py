@@ -9,8 +9,8 @@ UNIT_SCALE = 100000000
 class Timestamp(int):
     def __new__(cls, *args, **kwargs):
         value = super().__new__(cls, *args, **kwargs)
-        if value <= 0:
-            raise ValueError('Must be greater than zero')
+        if value < 0:
+            raise ValueError('Must be a positive value')
         return value
 
     @staticmethod

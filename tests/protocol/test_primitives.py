@@ -4,15 +4,15 @@ from risesdk.protocol import PublicKey, Signature, Address, Timestamp, Amount
 
 class TestTimestamp(unittest.TestCase):
     def test_negative(self):
-        with self.assertRaises(ValueError):
-            Timestamp(-1)
+        for i in [-1, -10]:
+            with self.subTest(i=i):
+                with self.assertRaises(ValueError):
+                    Timestamp(i)
 
-    def test_zero(self):
-        with self.assertRaises(ValueError):
-            Timestamp(0)
-
-    def test_positive(self):
-        Timestamp(1)
+    def test_valid(self):
+        for i in [0, 1, 10, 100000]:
+            with self.subTest(i=i):
+                Timestamp(i)
 
     def test_to_datetime(self):
         dt = Timestamp(100).to_datetime()
