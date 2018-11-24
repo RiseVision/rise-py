@@ -1,3 +1,4 @@
+import hashlib
 from typing import Dict, Type, Optional, List
 from abc import ABC, abstractmethod
 from risesdk.protocol.primitives import Timestamp, Amount, Address, PublicKey, Signature
@@ -51,6 +52,12 @@ class BaseTx(ABC):
                 return type_id
         raise TypeError('{} has not been decorated with @transaction_type'.format(type(self)))
 
+    def derive_id(self) -> str:
+        msg = self.to_bytes()
+        digest = hashlib.sha256(msg).digest()
+        i = int.from_bytes(digest[:8], byteorder='little')
+        return str(i)
+
     @abstractmethod
     def _asset_bytes(self) -> bytes:
         raise NotImplementedError()
@@ -70,16 +77,15 @@ class BaseTx(ABC):
     def to_bytes(self, skip_signature: bool = False, skip_second_signature: bool = False) -> bytes:
         buf = bytearray()
         buf.append(self.__type_id)
-        buf += self.timestamp.to_bytes(4, byteorder='big')
+        buf += self.timestamp.to_bytes(4, byteorder='little')
         buf += self.sender_public_key
         if self.requester_public_key:
             buf += self.requester_public_key
-        recipient = self._recipient
-        if recipient:
-            buf += recipient.to_bytes()
+        if self._recipient:
+            buf += self._recipient.to_bytes()
         else:
             buf += bytes(8)
-        buf += self._amount.to_bytes(8, byteorder='big')
+        buf += self._amount.to_bytes(8, byteorder='little')
         buf += self._asset_bytes()
         if not skip_signature and self.signature:
             buf += self.signature
@@ -87,9 +93,9 @@ class BaseTx(ABC):
             buf += self.second_signature
         return bytes(buf)
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def parse_json(data):
+    def parse_json(cls, data):
         try:
             if data.get('requesterPublicKey'):
                 requester_public_key = PublicKey.fromhex(data.get('requesterPublicKey'))
@@ -132,6 +138,7 @@ class BaseTx(ABC):
     def to_json(self):
         return {
             'type': self.__type_id,
+            'id': self.derive_id(),
             'timestamp': self.timestamp,
             'senderId': self.sender_public_key.derive_address(),
             'senderPublicKey': self.sender_public_key.hex(),
@@ -141,7 +148,7 @@ class BaseTx(ABC):
             'signSignature': self.second_signature.hex() if self.second_signature else None,
             'signatures': [sig.hex() for sig in (self.signatures or [])],
             'amount': self._amount,
-            'recipientId': self._recipient or sender_address,
+            'recipientId': self._recipient,
             'asset': self._asset_json(),
         }
 
@@ -188,15 +195,15 @@ class SendTx(BaseTx):
     def _recipient(self) -> Optional[Address]:
         return self.recipient
 
-    @staticmethod
-    def parse_json(data):
+    @classmethod
+    def parse_json(cls, data):
         base = super().parse_json(data)
 
         try:
             return {
                 **base,
                 'amount': Amount(data['amount']),
-                'recipientId': Address(data['recipientId']),
+                'recipient': Address(data['recipientId']),
             }
         except KeyError as err:
             raise ValueError('Data dictionary is missing "{}" item'.format(err.args[0]))
@@ -237,8 +244,8 @@ class RegisterSecondSignatureTx(BaseTx):
             },
         }
 
-    @staticmethod
-    def parse_json(data):
+    @classmethod
+    def parse_json(cls, data):
         base = super().parse_json(data)
 
         try:
@@ -252,7 +259,7 @@ class RegisterSecondSignatureTx(BaseTx):
             raise ValueError('Data dictionary is missing "asset.{}" item'.format(err.args[0]))
 
         try:
-            second_public_key = asset_sig['publicKey']
+            second_public_key = PublicKey.fromhex(asset_sig['publicKey'])
         except KeyError as err:
             raise ValueError('Data dictionary is missing "asset.signature.{}" item'.format(err.args[0]))
 
@@ -297,8 +304,8 @@ class RegisterDelegateTx(BaseTx):
             }
         }
 
-    @staticmethod
-    def parse_json(data):
+    @classmethod
+    def parse_json(cls, data):
         base = super().parse_json(data)
 
         try:
@@ -350,6 +357,10 @@ class VoteTx(BaseTx):
         self.add_votes = add_votes
         self.remove_votes = remove_votes
 
+    @property
+    def _recipient(self) -> Optional[Address]:
+        return self.sender_public_key.derive_address()
+
     def _asset_bytes(self) -> bytes:
         buf = bytearray()
         for pk in self.remove_votes:
@@ -367,8 +378,8 @@ class VoteTx(BaseTx):
             ],
         }
 
-    @staticmethod
-    def parse_json(data):
+    @classmethod
+    def parse_json(cls, data):
         base = super().parse_json(data)
 
         try:
@@ -453,8 +464,8 @@ class RegisterMultisignatureTx(BaseTx):
             },
         }
 
-    @staticmethod
-    def parse_json(data):
+    @classmethod
+    def parse_json(cls, data):
         base = super().parse_json(data)
 
         try:
