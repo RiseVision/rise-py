@@ -29,7 +29,7 @@ class Timestamp(int):
 class Amount(int):
     def __new__(cls, *args, **kwargs):
         value = super().__new__(cls, *args, **kwargs)
-        if value <= 0:
+        if value < 0:
             raise ValueError('Must be a positive value')
         if value > 0xFFFFFFFFFFFFFFFF:
             raise ValueError('Too big value')

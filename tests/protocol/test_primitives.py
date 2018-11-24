@@ -34,9 +34,14 @@ class TestAmount(unittest.TestCase):
         Amount.from_unit('184467440737.09551615')
 
     def test_valid(self):
-        value = Amount.from_unit('25')
-        self.assertIsInstance(value, Amount)
-        self.assertEqual(value, 2500000000)
+        for i in [0, 1, 10, 100000]:
+            with self.subTest(i=i):
+                value = Amount(i)
+                self.assertIsInstance(value, Amount)
+
+    def test_from_unit(self):
+        self.assertEqual(Amount.from_unit('25'), 2500000000)
+        self.assertEqual(Amount.from_unit('0.1'), 10000000)
 
 class TestAddress(unittest.TestCase):
     def test_valid(self):
