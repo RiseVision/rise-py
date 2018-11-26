@@ -1,7 +1,9 @@
 from typing import Union
 from datetime import datetime, timedelta
-import hashlib
 from decimal import Decimal
+import hashlib
+import os
+import ed25519
 
 RISE_EPOCH = datetime(2016, 4, 24, 17, 0, 0, 0)
 UNIT_SCALE = 100000000
@@ -52,6 +54,13 @@ class Address(str):
     def to_bytes(self) -> bytes:
         return int(self[:-1]).to_bytes(8, byteorder='big')
 
+class Signature(bytes):
+    def __new__(cls, *args, **kwargs):
+        value = super().__new__(cls, *args, **kwargs)
+        if len(value) != 64:
+            raise ValueError('Must be exactly 64 bytes')
+        return value
+
 class PublicKey(bytes):
     def __new__(cls, *args, **kwargs):
         value = super().__new__(cls, *args, **kwargs)
@@ -64,9 +73,41 @@ class PublicKey(bytes):
         i = int.from_bytes(digest[:8], byteorder='little')
         return Address('{}R'.format(i))
 
-class Signature(bytes):
+    def verify(self, signature: Signature, message: bytes) -> bool:
+        vk = ed25519.VerifyingKey(bytes(self))
+        digest = hashlib.sha256(message).digest()
+        try:
+            vk.verify(bytes(signature), digest)
+            return True
+        except ed25519.BadSignatureError:
+            return False
+
+class SecretKey(bytes):
     def __new__(cls, *args, **kwargs):
         value = super().__new__(cls, *args, **kwargs)
-        if len(value) != 64:
-            raise ValueError('Must be exactly 64 bytes')
+        if len(value) != 32:
+            raise ValueError('Must be exactly 32 bytes')
         return value
+
+    @staticmethod
+    def generate(entropy=os.urandom) -> 'SecretKey':
+        seed: bytes = entropy(32)
+        return SecretKey(seed)
+
+    @staticmethod
+    def from_passphrase(passphrase: str) -> 'SecretKey':
+        if not passphrase:
+            raise ValueError('Missing passphrase')
+
+        digest = hashlib.sha256(passphrase.encode('utf8')).digest()
+        return SecretKey(digest)
+
+    def derive_public_key(self) -> PublicKey:
+        sk = ed25519.SigningKey(bytes(self))
+        vk = sk.get_verifying_key()
+        return PublicKey(vk.to_bytes())
+
+    def sign(self, message: bytes) -> Signature:
+        sk = ed25519.SigningKey(bytes(self))
+        digest = hashlib.sha256(message).digest()
+        return Signature(sk.sign(digest))

@@ -3,6 +3,7 @@ from risesdk.protocol.primitives import (
     Amount,
     Address,
     PublicKey,
+    SecretKey,
     Signature,
 )
 

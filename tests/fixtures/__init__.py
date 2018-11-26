@@ -13,3 +13,4 @@ class Fixtures(object):
         self.second_signature_txs = _load('secondSignatureTxs.json')
         self.send_txs = _load('sendTxs.json')
         self.vote_txs = _load('voteTxs.json')
+        self.genesis_delegates = _load('genesisDelegates.json')

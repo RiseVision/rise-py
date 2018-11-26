@@ -4,6 +4,7 @@ from risesdk.protocol import (
     Timestamp,
     Amount,
     Address,
+    SecretKey,
     PublicKey,
     Signature,
     BaseTx,
@@ -18,7 +19,7 @@ class TestTransactions(unittest.TestCase):
     def setUpClass(cls):
         cls.fixtures = Fixtures()
 
-    def test_from_json_fixtures(self):
+    def test_tx_fixtures(self):
         tests = [
             ('send', self.fixtures.send_txs, SendTx),
             ('delegate', self.fixtures.delegate_txs, RegisterDelegateTx),
@@ -29,6 +30,26 @@ class TestTransactions(unittest.TestCase):
                 with self.subTest(fixture=fixture, index=idx):
                     tx = BaseTx.from_json(raw_tx)
                     self.assertIsInstance(tx, tx_cls)
+
+                    # Verify signatures
+                    pk, sig = tx.sender_public_key, tx.signature
+                    msg = tx.to_bytes(skip_signature=True, skip_second_signature=True)
+                    self.assertTrue(pk.verify(sig, msg))
+
+    def test_signing_fixtures(self):
+        for (idx, raw) in enumerate(self.fixtures.second_signature_txs):
+            with self.subTest(index=idx):
+                sk1 = SecretKey.from_passphrase(raw['secret'])
+                sk2 = SecretKey.from_passphrase(raw['secondSecret'])
+                tx = BaseTx.from_json(raw['tx'])
+
+                msg1 = tx.to_bytes(skip_signature=True, skip_second_signature=True)
+                sig1 = sk1.sign(msg1)
+                self.assertEqual(sig1, tx.signature)
+
+                msg2 = tx.to_bytes(skip_second_signature=True)
+                sig2 = sk2.sign(msg2)
+                self.assertEqual(sig2, tx.second_signature)
 
     def test_send_from_json(self):
         raw_tx = {

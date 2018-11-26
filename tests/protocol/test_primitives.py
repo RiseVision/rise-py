@@ -1,6 +1,14 @@
 import unittest
 from datetime import datetime
-from risesdk.protocol import PublicKey, Signature, Address, Timestamp, Amount
+from risesdk.protocol import (
+    SecretKey,
+    PublicKey,
+    Signature,
+    Address,
+    Timestamp,
+    Amount,
+)
+from tests.fixtures import Fixtures
 
 class TestTimestamp(unittest.TestCase):
     def test_negative(self):
@@ -49,6 +57,10 @@ class TestAddress(unittest.TestCase):
         self.assertIsInstance(value, Address)
 
 class TestPublicKey(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.fixtures = Fixtures()
+
     def test_invalid(self):
         with self.assertRaises(ValueError):
             PublicKey([0, 1, 2])
@@ -63,6 +75,40 @@ class TestPublicKey(unittest.TestCase):
     def test_derive_address(self):
         pk = PublicKey.fromhex('b3dc9171d784a3669482103951e0e8e89429f78ee5634950f0f4a7f8fad19378')
         self.assertEqual(Address('10820014087913201714R'), pk.derive_address())
+
+    def test_verify(self):
+        msg = b'Hello, world!'
+        sig = Signature.fromhex('90906e741ccf000046672a4f7350dde1e7f6efe32389e8af79930ea6d42cbddc1f68419809da74bf69a09d9bac9cd3c1a32cf081a655e5fa44590be70c264c0a')
+        pk = PublicKey.fromhex('9d3058175acab969f41ad9b86f7a2926c74258670fe56b37c429c01fca9f2f0f')
+
+        self.assertEqual(pk.verify(sig, msg), True)
+        self.assertEqual(pk.verify(sig, b'Wrong message'), False)
+
+class TestSecretKey(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.fixtures = Fixtures()
+
+    def test_derive_public_key(self):
+        for (idx, raw) in enumerate(self.fixtures.genesis_delegates['delegates']):
+            with self.subTest(username=raw['username'], index=idx):
+                sk = SecretKey.from_passphrase(raw['secret'])
+                self.assertIsInstance(sk, SecretKey)
+                pk = sk.derive_public_key()
+                self.assertIsInstance(pk, PublicKey)
+                self.assertEqual(pk, PublicKey.fromhex(raw['publicKey']))
+
+    def test_sign(self):
+        msg = b'Hello, world!'
+        sk = SecretKey.from_passphrase('robust swift grocery peasant forget share enable convince deputy road keep cheap')
+
+        sig = sk.sign(msg)
+        self.assertIsInstance(sig, Signature)
+        self.assertEqual(sig, Signature.fromhex('90906e741ccf000046672a4f7350dde1e7f6efe32389e8af79930ea6d42cbddc1f68419809da74bf69a09d9bac9cd3c1a32cf081a655e5fa44590be70c264c0a'))
+
+    def test_generate(self):
+        sk = SecretKey.generate()
+        self.assertIsInstance(sk, SecretKey)
 
 class TestSignature(unittest.TestCase):
     def test_invalid(self):
