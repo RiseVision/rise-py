@@ -6,6 +6,9 @@ from risesdk.protocol.primitives import Timestamp, Amount, Address, PublicKey, S
 _tx_type_registry: Dict[int, Type['BaseTx']] = {}
 
 def transaction_type(type_id: int):
+    '''
+    Decorator to associate transaction type_id with a BaseTx subclass.
+    '''
     def decorator(cls):
         if not issubclass(cls, BaseTx):
             raise ValueError('{} is not a subclass of BaseTx'.format(cls))
@@ -53,6 +56,9 @@ class BaseTx(ABC):
         raise TypeError('{} has not been decorated with @transaction_type'.format(type(self)))
 
     def derive_id(self) -> str:
+        '''
+        Compute the transaction ID (hash) based on the properties of this object.
+        '''
         msg = self.to_bytes()
         digest = hashlib.sha256(msg).digest()
         i = int.from_bytes(digest[:8], byteorder='little')
@@ -75,6 +81,16 @@ class BaseTx(ABC):
         return Amount('0')
 
     def to_bytes(self, skip_signature: bool = False, skip_second_signature: bool = False) -> bytes:
+        '''
+        Serialize the transaction to binary format.
+
+        This format is used to calculate the transaction
+        ID, used as the input for the SecretKey.sign() function or can be passed to the Ledger app
+        for signing.
+
+        When skip_signature=True, the signature property value is ignored during serialization.
+        When skip_second_signature=True, the second_signature property value is ignored.
+        '''
         buf = bytearray()
         buf.append(self.__type_id)
         buf += self.timestamp.to_bytes(4, byteorder='little')
@@ -127,6 +143,9 @@ class BaseTx(ABC):
 
     @staticmethod
     def from_json(data) -> 'BaseTx':
+        '''
+        Attempt to deserialize the transaction from a plain JSON-compatible Python dictionary.
+        '''
         if 'type' not in data:
             raise ValueError('Data dictionary is missing "type" item')
         if data['type'] not in _tx_type_registry:
@@ -136,6 +155,9 @@ class BaseTx(ABC):
         return cls(**cls.parse_json(data))
 
     def to_json(self):
+        '''
+        Serialize the transaction to a plain JSON-compatible Python dictionary.
+        '''
         return {
             'type': self.__type_id,
             'id': self.derive_id(),
