@@ -48,12 +48,12 @@ class BaseTx(ABC):
         self.second_signature = second_signature
         self.signatures = signatures
 
-    @property
-    def __type_id(self) -> int:
-        for (type_id, cls) in _tx_type_registry.items():
-            if cls == type(self):
+    @classmethod
+    def _type_id(cls) -> int:
+        for (type_id, type_cls) in _tx_type_registry.items():
+            if type_cls == cls:
                 return type_id
-        raise TypeError('{} has not been decorated with @transaction_type'.format(type(self)))
+        raise TypeError('{} has not been decorated with @transaction_type'.format(cls))
 
     def derive_id(self) -> str:
         '''
@@ -92,7 +92,7 @@ class BaseTx(ABC):
         When skip_second_signature=True, the second_signature property value is ignored.
         '''
         buf = bytearray()
-        buf.append(self.__type_id)
+        buf.append(self._type_id())
         buf += self.timestamp.to_bytes(4, byteorder='little')
         buf += self.sender_public_key
         if self.requester_public_key:
@@ -159,7 +159,7 @@ class BaseTx(ABC):
         Serialize the transaction to a plain JSON-compatible Python dictionary.
         '''
         return {
-            'type': self.__type_id,
+            'type': self._type_id(),
             'id': self.derive_id(),
             'timestamp': self.timestamp,
             'senderId': self.sender_public_key.derive_address(),
