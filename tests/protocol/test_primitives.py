@@ -25,10 +25,10 @@ class TestTimestamp(unittest.TestCase):
 
     def test_to_datetime(self):
         dt = Timestamp(100).to_datetime()
-        self.assertEqual(dt, datetime(2016, 4, 24, 17, 1, 40, 0))
+        self.assertEqual(dt, datetime(2016, 5, 24, 17, 1, 40, 0))
 
     def test_from(self):
-        dt = Timestamp.from_datetime(datetime(2016, 4, 24, 20, 25, 45, 0))
+        dt = Timestamp.from_datetime(datetime(2016, 5, 24, 20, 25, 45, 0))
         self.assertEqual(dt, Timestamp(12345))
 
 class TestAmount(unittest.TestCase):

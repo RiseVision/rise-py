@@ -5,7 +5,7 @@ import hashlib
 import os
 import ed25519
 
-RISE_EPOCH = datetime(2016, 4, 24, 17, 0, 0, 0)
+RISE_EPOCH = datetime(2016, 5, 24, 17, 0, 0, 0)
 UNIT_SCALE = 100000000
 
 class Timestamp(int):
@@ -13,7 +13,7 @@ class Timestamp(int):
     Convenience type to represent timestamps.
 
     Timestamps in the RISE network are represented by a unsigned 64-bit integer
-    and are defined as seconds from the RISE epoch (24th april 2016 at 17:00).
+    and are defined as seconds from the RISE epoch (24th may 2016 at 17:00).
     '''
 
     def __new__(cls, *args, **kwargs):
