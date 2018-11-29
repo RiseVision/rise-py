@@ -11,7 +11,7 @@ class AccountInfo(object):
     address: Address
     balance: Amount
     unconfirmed_balance: Amount
-    public_key: PublicKey
+    public_key: Optional[PublicKey]
     second_public_key: Optional[PublicKey]
     second_signature: bool
     unconfirmed_second_signature: bool
@@ -22,7 +22,8 @@ class AccountInfo(object):
         self.address = Address(raw['address'])
         self.balance = Amount(raw['balance'])
         self.unconfirmed_balance = Amount(raw['unconfirmedBalance'])
-        self.public_key = PublicKey.fromhex(raw['publicKey'])
+        self.public_key = None if raw['publicKey'] is None \
+            else PublicKey.fromhex(raw['publicKey'])
         if raw['secondPublicKey']:
             self.second_public_key = PublicKey.fromhex(raw['secondPublicKey'])
         else:
