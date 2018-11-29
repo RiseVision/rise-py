@@ -427,3 +427,98 @@ class VoteTx(BaseTx):
             'add_votes': add_votes,
             'remove_votes': remove_votes,
         }
+
+@transaction_type(4)
+class RegisterMultisignatureTx(BaseTx):
+    minimum_signatures: int
+    lifetime: int
+    add_public_keys: List[PublicKey]
+    remove_public_keys: List[PublicKey]
+
+    def __init__(
+        self,
+        sender_public_key: PublicKey,
+        minimum_signatures: int,
+        lifetime: int,
+        add_public_keys: List[PublicKey],
+        remove_public_keys: List[PublicKey],
+        fee: Amount,
+        timestamp: Optional[Timestamp] = None,
+        requester_public_key: Optional[PublicKey] = None,
+        signature: Optional[Signature] = None,
+        second_signature: Optional[Signature] = None,
+        signatures: List[Signature] = [],
+    ):
+        super().__init__(
+            sender_public_key = sender_public_key,
+            fee = fee,
+            timestamp = timestamp,
+            requester_public_key = requester_public_key,
+            signature = signature,
+            second_signature = second_signature,
+            signatures = signatures,
+        )
+        self.minimum_signatures = minimum_signatures
+        self.lifetime = lifetime
+        self.add_public_keys = add_public_keys
+        self.remove_public_keys = remove_public_keys
+
+    def _asset_bytes(self) -> bytes:
+        buf = bytearray()
+        buf.append(self.minimum_signatures)
+        buf.append(self.lifetime)
+        for pk in self.remove_public_keys:
+            buf += bytes('-{}'.format(pk.hex()), 'utf8')
+        for pk in self.add_public_keys:
+            buf += bytes('+{}'.format(pk.hex()), 'utf8')
+        return bytes(buf)
+
+    def _asset_json(self):
+        return {
+            'multisignature': {
+                'min': self.minimum_signatures,
+                'lifetime': self.lifetime,
+                'keysgroup': [
+                    '-{}'.format(pk.hex()) for pk in self.remove_public_keys
+                ] + [
+                    '+{}'.format(pk.hex()) for pk in self.add_public_keys
+                ],
+            },
+        }
+
+    @classmethod
+    def parse_json(cls, data):
+        base = super().parse_json(data)
+
+        try:
+            asset = data['asset']
+        except KeyError as err:
+            raise ValueError('Data dictionary is missing "{}" item'.format(err.args[0]))
+
+        try:
+            asset_multisig = asset['multisignature']
+        except KeyError as err:
+            raise ValueError('Data dictionary is missing "asset.{}" item'.format(err.args[0]))
+
+        try:
+            minimum_signatures = int(asset_multisig['min'])
+            lifetime = int(asset_multisig['lifetime'])
+            signatories = asset_multisig['keysgroup']
+        except KeyError as err:
+            raise ValueError('Data dictionary is missing "asset.multisignature.{}" item'.format(err.args[0]))
+
+        add_public_keys: List[PublicKey] = []
+        remove_public_keys: List[PublicKey] = []
+        for val in signatories:
+            if val[0] == '-':
+                remove_public_keys.append(PublicKey.fromhex(val[1:]))
+            elif val[0] == '+':
+                add_public_keys.append(PublicKey.fromhex(val[1:]))
+
+        return {
+            **base,
+            'minimum_signatures': minimum_signatures,
+            'lifetime': lifetime,
+            'add_public_keys': add_public_keys,
+            'remove_public_keys': remove_public_keys,
+        }
