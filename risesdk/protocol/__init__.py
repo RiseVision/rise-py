@@ -13,5 +13,4 @@ from risesdk.protocol.transactions import (
     RegisterSecondSignatureTx,
     RegisterDelegateTx,
     VoteTx,
-    RegisterMultisignatureTx,
 )

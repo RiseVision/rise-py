@@ -97,17 +97,6 @@ class TestDelegatesAPI(APITestCase):
         except APIError as err:
             self.assertEqual(err.args[0], 'Delegates API access denied')
 
-class TestMultisignatureAPI(APITestCase):
-    def test_get_accounts(self):
-        self.client.multisignature.get_accounts(
-            public_key=PublicKey.fromhex('0b7bb40385c5261c8cc763babebc9ccf9d392e618dc15104db5efb1c6a5719ee')
-        )
-
-    def test_get_pending_transactions(self):
-        self.client.multisignature.get_pending_transactions(
-            public_key=PublicKey.fromhex('0b7bb40385c5261c8cc763babebc9ccf9d392e618dc15104db5efb1c6a5719ee')
-        )
-
 class TestTransactionsAPI(APITestCase):
     def test_get_transactions(self):
         # Get all incoming and outgoing send transactions for an account
@@ -134,13 +123,6 @@ class TestTransactionsAPI(APITestCase):
 
     def test_get_transaction(self):
         self.client.transactions.get_transaction('11932194661546784672')
-
-    def test_get_multisignature_transactions(self):
-        self.client.transactions.get_multisignature_transactions()
-
-    def test_get_multisignature_transaction(self):
-        tx = self.client.transactions.get_multisignature_transaction('15656453436546686275')
-        self.assertIsNone(tx)
 
     def test_get_queued_transactions(self):
         self.client.transactions.get_queued_transactions()

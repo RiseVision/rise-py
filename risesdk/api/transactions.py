@@ -51,13 +51,11 @@ class PendingTransactionsResult(object):
 
 class TransactionsCountResult(object):
     confirmed: int
-    multisignature: int
     queued: int
     unconfirmed: int
 
     def __init__(self, raw):
         self.confirmed = int(raw['confirmed'])
-        self.multisignature = int(raw['multisignature'])
         self.queued = int(raw['queued'])
         self.unconfirmed = int(raw['unconfirmed'])
 
@@ -184,29 +182,6 @@ class TransactionsAPI(BaseAPI):
             else:
                 raise
         return TransactionInfo(r['transaction'])
-
-    def get_multisignature_transactions(
-        self,
-        sender_public_key: Optional[PublicKey] = None,
-        address: Optional[Address] = None,
-    ):
-        r = self._get('/transactions/multisignatures', params={
-            'senderPublicKey': None if sender_public_key is None else sender_public_key.hex(),
-            'address': None if address is None else str(address),
-        })
-        raise NotImplementedError()
-
-    def get_multisignature_transaction(self, tx_id: str):
-        try:
-            r = self._get('/transactions/multisignatures/get', params={
-                'id': tx_id,
-            })
-        except APIError as err:
-            if err.args[0].startswith('Transaction not found'):
-                return None
-            else:
-                raise
-        raise NotImplementedError()
 
     def get_queued_transactions(
         self,

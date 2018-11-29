@@ -63,14 +63,12 @@ class FeesInfo(object):
     vote: Amount
     second_signature: Amount
     delegate: Amount
-    multisignature: Amount
 
     def __init__(self, raw):
         self.send = Amount(raw['send'])
         self.vote = Amount(raw['vote'])
         self.second_signature = Amount(raw['secondsignature'])
         self.delegate = Amount(raw['delegate'])
-        self.multisignature = Amount(raw['multisignature'])
 
 class FeesResult(object):
     fees: FeesInfo

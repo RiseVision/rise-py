@@ -15,8 +15,6 @@ class AccountInfo(object):
     second_public_key: Optional[PublicKey]
     second_signature: bool
     unconfirmed_second_signature: bool
-    multisignatures: List[PublicKey]
-    unconfirmed_multisignatures: List[PublicKey]
 
     def __init__(self, raw):
         self.address = Address(raw['address'])
@@ -30,14 +28,6 @@ class AccountInfo(object):
             self.second_public_key = None
         self.second_signature = bool(raw['secondSignature'])
         self.unconfirmed_second_signature = bool(raw['unconfirmedSignature'])
-        self.multisignatures = [
-            PublicKey.fromhex(pk)
-            for pk in raw.get('multisignatures', [])
-        ]
-        self.unconfirmed_multisignatures = [
-            PublicKey.fromhex(pk)
-            for pk in raw.get('u_multisignatures', [])
-        ]
 
 class AccountsAPI(BaseAPI):
     def get_account(
