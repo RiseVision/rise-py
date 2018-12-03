@@ -187,7 +187,7 @@ class TransactionsAPI(BaseAPI):
         self,
         sender_public_key: Optional[PublicKey] = None,
         address: Optional[Address] = None,
-    ):
+    ) -> PendingTransactionsResult:
         r = self._get('/transactions/queued', params={
             'senderPublicKey': None if sender_public_key is None else sender_public_key.hex(),
             'address': None if address is None else str(address),
@@ -210,14 +210,14 @@ class TransactionsAPI(BaseAPI):
         self,
         sender_public_key: Optional[PublicKey] = None,
         address: Optional[Address] = None,
-    ):
+    ) -> PendingTransactionsResult:
         r = self._get('/transactions/unconfirmed', params={
             'senderPublicKey': None if sender_public_key is None else sender_public_key.hex(),
             'address': None if address is None else str(address),
         })
         return PendingTransactionsResult(r)
 
-    def get_unconfirmed_transaction(self, tx_id: str):
+    def get_unconfirmed_transaction(self, tx_id: str) -> Optional[PendingTransactionInfo]:
         try:
             r = self._get('/transactions/unconfirmed/get', params={
                 'id': tx_id,
