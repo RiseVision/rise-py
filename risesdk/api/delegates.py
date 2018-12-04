@@ -89,14 +89,17 @@ class VoterInfo(object):
 class NextForgersResult(object):
     current_block: BlockInfo
     current_block_slot: int
-    current_block_relays: int
+    current_block_relays: Optional[int]
     current_slot: int
     delegates: List[PublicKey]
 
     def __init__(self, raw):
         self.current_block = BlockInfo(raw['currentBlock'])
         self.current_block_slot = int(raw['currentBlockSlot'])
-        self.current_block_relays = int(raw['currentBlock']['relays'])
+        if 'relays' in raw['currentBlock']:
+            self.current_block_relays = int(raw['currentBlock']['relays'])
+        else:
+            self.current_block_relays = None
         self.delegates = [PublicKey.fromhex(d) for d in raw['delegates']]
 
 class ForgingStatusResult(object):
