@@ -1,3 +1,4 @@
 requests==2.20.1
 ed25519==1.4.0
+mypy==0.641.0
 mnemonic==0.18.0
