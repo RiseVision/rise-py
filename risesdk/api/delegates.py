@@ -164,7 +164,7 @@ class DelegatesAPI(BaseAPI):
         self,
         query: str,
         limit: Optional[int] = None,
-    ):
+    ) -> List[DelegateInfo]:
         r = self._get('/delegates/search', params={
             'q': query,
             'limit': limit,
