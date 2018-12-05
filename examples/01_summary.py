@@ -1,4 +1,4 @@
-from risesdk.api import Client
+from risesdk import Client
 
 # Connect to the RISE hosted public node and print out a basic summary
 api = Client('https://wallet.rise.vision/api/')

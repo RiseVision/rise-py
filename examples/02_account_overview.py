@@ -1,12 +1,12 @@
 from sys import exit, argv
-from risesdk.protocol import (
+from risesdk import (
     Address,
     SendTx,
     RegisterSecondSignatureTx,
     RegisterDelegateTx,
     VoteTx,
+    Client,
 )
-from risesdk.api import Client
 
 # A simple command line utility to print an account overview
 api = Client('https://wallet.rise.vision/api/')

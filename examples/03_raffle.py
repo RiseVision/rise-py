@@ -23,14 +23,14 @@ from sys import exit
 from random import randint
 from mnemonic import Mnemonic
 from decimal import Decimal
-from risesdk.protocol import (
+from risesdk import (
     Timestamp,
     Amount,
     SecretKey,
     Address,
     SendTx,
+    Client,
 )
-from risesdk.api import Client
 
 ROUND_TIME = 300 # seconds (5 minutes)
 HOUSE_FEE = Decimal('0.025') # percent (2.5%)
