@@ -9,3 +9,4 @@ python:
 script:
   - mypy --ignore-missing-imports risesdk/ tests/
   - python -m unittest
+  - python -m doctest -v $(find risesdk/ -iname "*.py")
