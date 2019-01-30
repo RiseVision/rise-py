@@ -12,7 +12,6 @@ from risesdk.api.transactions import TransactionInfo
 
 class BlockInfo(object):
     block_id: str
-    row_id: Optional[int]
     version: int
     timestamp: Timestamp
     height: int
@@ -29,10 +28,6 @@ class BlockInfo(object):
 
     def __init__(self, raw):
         self.block_id = str(raw['id'])
-        if 'rowId'in raw:
-            self.row_id = int(raw['rowId'])
-        else:
-            self.row_id = None
         self.version = int(raw['version'])
         self.timestamp = Timestamp(raw['timestamp'])
         self.height = int(raw['height'])

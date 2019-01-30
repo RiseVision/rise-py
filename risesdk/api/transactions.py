@@ -11,7 +11,6 @@ from risesdk.api.base import BaseAPI, APIError
 
 class TransactionInfo(object):
     tx_id: str
-    row_id: int
     height: int
     block_id: str
     confirmations: int
@@ -19,7 +18,6 @@ class TransactionInfo(object):
 
     def __init__(self, raw):
         self.tx_id = str(raw['id'])
-        self.row_id = int(raw['rowId'])
         self.height = int(raw['height'])
         self.block_id = str(raw['blockId'])
         self.confirmations = int(raw['confirmations'])
