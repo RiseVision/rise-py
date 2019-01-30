@@ -5,6 +5,7 @@ from risesdk.api.blocks import BlocksAPI
 from risesdk.api.delegates import DelegatesAPI
 from risesdk.api.transactions import TransactionsAPI
 
+
 class Client(object):
     accounts: AccountsAPI
     blocks: BlocksAPI
@@ -13,7 +14,7 @@ class Client(object):
 
     def __init__(
         self,
-        base_url: str ='http://127.0.0.1:5566',
+        base_url: str = 'http://127.0.0.1:5566',
         session: Optional[requests.Session] = None,
     ):
         self.accounts = AccountsAPI(base_url, session)

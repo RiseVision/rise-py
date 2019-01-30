@@ -1,4 +1,4 @@
-'''
+"""
 This example demonstrates how to build a raffle system on top of RISE blockchain.
 The raffle works by users sending RISE to the account controlled by this script.
 That buys them entries to the raffle. The more RISE they send, the more entries
@@ -16,10 +16,9 @@ not being included in the round. Because of that, the raffle will take 2 rounds.
 When the round is opened, the users will buy tickets. Then the round is closed
 and a new round starts. After the 2nd round ends, the winner of the 1st round
 is determined and will be awarded the prize.
-'''
+"""
 
 import time
-from sys import exit
 from random import randint
 from mnemonic import Mnemonic
 from decimal import Decimal
@@ -27,13 +26,12 @@ from risesdk import (
     Timestamp,
     Amount,
     SecretKey,
-    Address,
     SendTx,
     Client,
 )
 
-ROUND_TIME = 300 # seconds (5 minutes)
-HOUSE_FEE = Decimal('0.025') # percent (2.5%)
+ROUND_TIME = 300  # seconds (5 minutes)
+HOUSE_FEE = Decimal('0.025')  # percent (2.5%)
 
 api = Client('https://twallet.rise.vision/api/')
 print('=== Network: RISE testnet ===')
@@ -42,7 +40,8 @@ print()
 ###
 # Get the raffle account secret key
 ###
-print('Enter the raffle account 12-word passhphrase or hex-encoded secret key. Or leave empty to generate a new mnemonic.')
+print('Enter the raffle account 12-word passhphrase or hex-encoded secret key. '
+      'Or leave empty to generate a new mnemonic.')
 raf_sk = None
 inp = input('Passphrase / secret key: ').strip()
 if not inp:
@@ -72,6 +71,7 @@ raf_addr = raf_pk.derive_address()
 print('Raffle account: {}'.format(raf_addr))
 print()
 
+
 def sleep_for(seconds, msg='Waiting for {} seconds...'):
     while seconds > 0:
         output = msg.format(seconds)
@@ -79,6 +79,7 @@ def sleep_for(seconds, msg='Waiting for {} seconds...'):
         time.sleep(1)
         seconds -= 1
         print('\b' * len(output), end='')
+
 
 ###
 # Determine the start time of the current round

@@ -10,10 +10,12 @@ from risesdk.protocol import (
 from risesdk.api import APIError, Client
 from risesdk.api.delegates import ForgingStatusResult
 
+
 class APITestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client('https://twallet.rise.vision/api/')
+
 
 class TestAccountsAPI(APITestCase):
     def test_get_account(self):
@@ -21,6 +23,7 @@ class TestAccountsAPI(APITestCase):
 
     def test_get_account_delegates(self):
         self.client.accounts.get_account_delegates(Address('7851658041862611161R'))
+
 
 class TestBlocksAPI(APITestCase):
     def test_get_blocks(self):
@@ -34,6 +37,7 @@ class TestBlocksAPI(APITestCase):
 
     def test_get_status(self):
         self.client.blocks.get_status()
+
 
 class TestDelegatesAPI(APITestCase):
     def test_get_delegates(self):
@@ -97,6 +101,7 @@ class TestDelegatesAPI(APITestCase):
         except APIError as err:
             self.assertEqual(err.args[0], 'Delegates API access denied')
 
+
 class TestTransactionsAPI(APITestCase):
     def test_get_transactions(self):
         # Get all incoming and outgoing send transactions for an account
@@ -114,7 +119,8 @@ class TestTransactionsAPI(APITestCase):
             amount=Amount(3500000000),
             fee=Amount(10000000),
             timestamp=Timestamp(71278993),
-            signature=Signature.fromhex('f3fa873fba4619a82becef2c3921d883b44055f6644acc6721be47e451f45ca00eb657f476f08b7b5f3035cbe60b7b2e5d68290e8391bdc152340df75c5f390f'),
+            signature=Signature.fromhex('f3fa873fba4619a82becef2c3921d883b44055f6644acc6721be47e451f45ca0'
+                                        '0eb657f476f08b7b5f3035cbe60b7b2e5d68290e8391bdc152340df75c5f390f'),
         )
         self.client.transactions.add_transactions(tx)
 

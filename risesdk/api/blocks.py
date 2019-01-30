@@ -1,5 +1,4 @@
 from typing import Optional, List
-import requests
 from risesdk.protocol import (
     Timestamp,
     Amount,
@@ -9,6 +8,7 @@ from risesdk.protocol import (
 )
 from risesdk.api.base import BaseAPI, APIError
 from risesdk.api.transactions import TransactionInfo
+
 
 class BlockInfo(object):
     block_id: str
@@ -50,6 +50,7 @@ class BlockInfo(object):
         self.block_signature = Signature.fromhex(raw['blockSignature'])
         self.transactions = [TransactionInfo(t) for t in raw['transactions']]
 
+
 class BlocksResult(object):
     blocks: List[BlockInfo]
     count: int
@@ -57,6 +58,7 @@ class BlocksResult(object):
     def __init__(self, raw):
         self.blocks = [BlockInfo(b) for b in raw['blocks']]
         self.count = int(raw['count'])
+
 
 class FeesInfo(object):
     send: Amount
@@ -69,6 +71,7 @@ class FeesInfo(object):
         self.vote = Amount(raw['vote'])
         self.second_signature = Amount(raw['secondsignature'])
         self.delegate = Amount(raw['delegate'])
+
 
 class FeesResult(object):
     fees: FeesInfo
@@ -84,6 +87,7 @@ class FeesResult(object):
             self.to_height = int(raw['toHeight'])
         else:
             self.to_height = None
+
 
 class StatusResult(object):
     broad_hash: bytes
@@ -104,6 +108,7 @@ class StatusResult(object):
         self.net_hash = bytes.fromhex(raw['nethash'])
         self.reward = Amount(raw['reward'])
         self.supply = Amount(raw['supply'])
+
 
 class BlocksAPI(BaseAPI):
     def get_blocks(

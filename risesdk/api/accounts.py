@@ -7,6 +7,7 @@ from risesdk.protocol import (
 from risesdk.api.base import BaseAPI, APIError
 from risesdk.api.delegates import DelegateInfo
 
+
 class AccountInfo(object):
     address: Address
     balance: Amount
@@ -28,6 +29,7 @@ class AccountInfo(object):
             self.second_public_key = None
         self.second_signature = bool(raw['secondSignature'])
         self.unconfirmed_second_signature = bool(raw['unconfirmedSignature'])
+
 
 class AccountsAPI(BaseAPI):
     def get_account(

@@ -1,8 +1,10 @@
 from typing import Any, Optional
 import requests
 
+
 class APIError(Exception):
     pass
+
 
 class BaseAPI(object):
     def __init__(

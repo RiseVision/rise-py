@@ -13,6 +13,7 @@ api = Client('https://wallet.rise.vision/api/')
 print('=== Network: RISE mainnet ===')
 print()
 
+
 def parse_address(val):
     val = val.upper()
     if not val.endswith('R'):
@@ -22,6 +23,7 @@ def parse_address(val):
     except ValueError:
         return None
     return Address(val)
+
 
 # Get the address from the command arguments, or prompt for it
 address = None
@@ -49,8 +51,9 @@ print('Balance: {} RISE'.format(acc.balance.to_unit()))
 print('Balance (unconfirmed): {} RISE'.format(acc.unconfirmed_balance.to_unit()))
 print('Public key: {}'.format('(unknown)' if acc.public_key is None else acc.public_key.hex()))
 print('Has second signature: {}'.format('Yes' if acc.second_signature else 'No'))
-print('Voted delegate: {}'.format('(none)' if len(votes) < 1 \
-    else '{} ({})'.format(votes[0].username, votes[0].address)))
+print('Voted delegate: {}'.format(
+    '(none)' if len(votes) < 1 else '{} ({})'.format(votes[0].username, votes[0].address)
+))
 print()
 
 # Print delegate information if the account has registered as one
@@ -80,6 +83,7 @@ txs = api.transactions.get_transactions(
     order_by='height:desc',
 )
 
+
 def tx_summary_string(tx):
     if isinstance(tx.tx, SendTx):
         if tx.tx.recipient == acc.address:
@@ -105,6 +109,7 @@ def tx_summary_string(tx):
             return 'Remove vote from {}'.format(tx.tx.remove_votes[0].derive_address())
     return 'Unknown transaction ({})'.format(tx.tx_id)
 
+
 if len(txs.transactions) > 0 or (utxs and len(utxs.transactions) > 0):
     print('== Recent transactions ==')
     if utxs and len(utxs.transactions) > 0:
@@ -113,4 +118,3 @@ if len(txs.transactions) > 0 or (utxs and len(utxs.transactions) > 0):
     for tx in txs.transactions:
         print('- {}'.format(tx_summary_string(tx)))
     print()
-

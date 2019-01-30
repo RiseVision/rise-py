@@ -10,6 +10,7 @@ from risesdk.protocol import (
 )
 from tests.fixtures import Fixtures
 
+
 class TestTimestamp(unittest.TestCase):
     def test_negative(self):
         for i in [-1, -10]:
@@ -31,6 +32,7 @@ class TestTimestamp(unittest.TestCase):
         dt = Timestamp.from_datetime(datetime(2016, 5, 24, 20, 25, 45, 0))
         self.assertEqual(dt, Timestamp(12345))
 
+
 class TestAmount(unittest.TestCase):
     def test_negative(self):
         with self.assertRaises(ValueError):
@@ -51,10 +53,12 @@ class TestAmount(unittest.TestCase):
         self.assertEqual(Amount.from_unit('25'), 2500000000)
         self.assertEqual(Amount.from_unit('0.1'), 10000000)
 
+
 class TestAddress(unittest.TestCase):
     def test_valid(self):
         value = Address('10820014087913201714R')
         self.assertIsInstance(value, Address)
+
 
 class TestPublicKey(unittest.TestCase):
     @classmethod
@@ -67,7 +71,7 @@ class TestPublicKey(unittest.TestCase):
 
     def test_valid(self):
         value = PublicKey([
-             0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
             16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
         ])
         self.assertIsInstance(value, PublicKey)
@@ -78,11 +82,13 @@ class TestPublicKey(unittest.TestCase):
 
     def test_verify(self):
         msg = b'Hello, world!'
-        sig = Signature.fromhex('90906e741ccf000046672a4f7350dde1e7f6efe32389e8af79930ea6d42cbddc1f68419809da74bf69a09d9bac9cd3c1a32cf081a655e5fa44590be70c264c0a')
+        sig = Signature.fromhex('90906e741ccf000046672a4f7350dde1e7f6efe32389e8af79930ea6d42cbddc'
+                                '1f68419809da74bf69a09d9bac9cd3c1a32cf081a655e5fa44590be70c264c0a')
         pk = PublicKey.fromhex('9d3058175acab969f41ad9b86f7a2926c74258670fe56b37c429c01fca9f2f0f')
 
         self.assertEqual(pk.verify(sig, msg), True)
         self.assertEqual(pk.verify(sig, b'Wrong message'), False)
+
 
 class TestSecretKey(unittest.TestCase):
     @classmethod
@@ -100,15 +106,18 @@ class TestSecretKey(unittest.TestCase):
 
     def test_sign(self):
         msg = b'Hello, world!'
-        sk = SecretKey.from_passphrase('robust swift grocery peasant forget share enable convince deputy road keep cheap')
+        sk = SecretKey.from_passphrase('robust swift grocery peasant forget share '
+                                       'enable convince deputy road keep cheap')
 
         sig = sk.sign(msg)
         self.assertIsInstance(sig, Signature)
-        self.assertEqual(sig, Signature.fromhex('90906e741ccf000046672a4f7350dde1e7f6efe32389e8af79930ea6d42cbddc1f68419809da74bf69a09d9bac9cd3c1a32cf081a655e5fa44590be70c264c0a'))
+        self.assertEqual(sig, Signature.fromhex('90906e741ccf000046672a4f7350dde1e7f6efe32389e8af79930ea6d42cbddc'
+                                                '1f68419809da74bf69a09d9bac9cd3c1a32cf081a655e5fa44590be70c264c0a'))
 
     def test_generate(self):
         sk = SecretKey.generate()
         self.assertIsInstance(sk, SecretKey)
+
 
 class TestSignature(unittest.TestCase):
     def test_invalid(self):
@@ -117,7 +126,7 @@ class TestSignature(unittest.TestCase):
 
     def test_valid(self):
         value = Signature([
-             0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
             16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
             32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
             48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,

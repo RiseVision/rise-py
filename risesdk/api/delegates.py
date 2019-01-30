@@ -1,5 +1,4 @@
 from typing import Optional, List
-import requests
 from risesdk.protocol import (
     Timestamp,
     Amount,
@@ -8,6 +7,7 @@ from risesdk.protocol import (
 )
 from risesdk.api.base import BaseAPI, APIError
 from risesdk.api.blocks import BlockInfo
+
 
 class DelegateInfo(object):
     address: Address
@@ -56,6 +56,7 @@ class DelegateInfo(object):
         else:
             self.register_timestamp = None
 
+
 class DelegatesResult(object):
     delegates: List[DelegateInfo]
     count: int
@@ -63,6 +64,7 @@ class DelegatesResult(object):
     def __init__(self, raw):
         self.delegates = [DelegateInfo(d) for d in raw['delegates']]
         self.count = int(raw['totalCount'])
+
 
 class DelegateForgingResult(object):
     fees: Amount
@@ -73,6 +75,7 @@ class DelegateForgingResult(object):
         self.fees = Amount(raw['fees'])
         self.rewards = Amount(raw['rewards'])
         self.forged = Amount(raw['forged'])
+
 
 class VoterInfo(object):
     address: Address
@@ -85,6 +88,7 @@ class VoterInfo(object):
         self.public_key = PublicKey.fromhex(raw['publicKey'])
         self.username = raw['username']
         self.balance = Amount(raw['balance'])
+
 
 class NextForgersResult(object):
     current_block: BlockInfo
@@ -102,6 +106,7 @@ class NextForgersResult(object):
             self.current_block_relays = None
         self.delegates = [PublicKey.fromhex(d) for d in raw['delegates']]
 
+
 class ForgingStatusResult(object):
     enabled: bool
     delegates: List[PublicKey]
@@ -109,6 +114,7 @@ class ForgingStatusResult(object):
     def __init__(self, raw):
         self.enabled = bool(raw['enabled'])
         self.delegates = [PublicKey.fromhex(d) for d in raw['delegates']]
+
 
 class DelegatesAPI(BaseAPI):
     def get_delegates(

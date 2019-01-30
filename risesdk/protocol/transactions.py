@@ -5,10 +5,11 @@ from risesdk.protocol.primitives import Timestamp, Amount, Address, PublicKey, S
 
 _tx_type_registry: Dict[int, Type['BaseTx']] = {}
 
+
 def transaction_type(type_id: int):
-    '''
+    """
     Decorator to associate transaction type_id with a BaseTx subclass.
-    '''
+    """
     def decorator(cls):
         if not issubclass(cls, BaseTx):
             raise ValueError('{} is not a subclass of BaseTx'.format(cls))
@@ -17,6 +18,7 @@ def transaction_type(type_id: int):
         _tx_type_registry[type_id] = cls
         return cls
     return decorator
+
 
 class BaseTx(ABC):
     timestamp: Timestamp
@@ -35,7 +37,7 @@ class BaseTx(ABC):
         requester_public_key: Optional[PublicKey] = None,
         signature: Optional[Signature] = None,
         second_signature: Optional[Signature] = None,
-        signatures: List[Signature] = [],
+        signatures: Optional[List[Signature]] = None,
     ):
         if timestamp is None:
             self.timestamp = Timestamp.now()
@@ -46,7 +48,10 @@ class BaseTx(ABC):
         self.fee = fee
         self.signature = signature
         self.second_signature = second_signature
-        self.signatures = signatures
+        if signatures is None:
+            self.signatures = []
+        else:
+            self.signatures = signatures
 
     @classmethod
     def _type_id(cls) -> int:
@@ -56,9 +61,9 @@ class BaseTx(ABC):
         raise TypeError('{} has not been decorated with @transaction_type'.format(cls))
 
     def derive_id(self) -> str:
-        '''
+        """
         Compute the transaction ID (hash) based on the properties of this object.
-        '''
+        """
         msg = self.to_bytes()
         digest = hashlib.sha256(msg).digest()
         i = int.from_bytes(digest[:8], byteorder='little')
@@ -81,7 +86,7 @@ class BaseTx(ABC):
         return Amount('0')
 
     def to_bytes(self, skip_signature: bool = False, skip_second_signature: bool = False) -> bytes:
-        '''
+        """
         Serialize the transaction to binary format.
 
         This format is used to calculate the transaction
@@ -90,7 +95,7 @@ class BaseTx(ABC):
 
         When skip_signature=True, the signature property value is ignored during serialization.
         When skip_second_signature=True, the second_signature property value is ignored.
-        '''
+        """
         buf = bytearray()
         buf.append(self._type_id())
         buf += self.timestamp.to_bytes(4, byteorder='little')
@@ -143,9 +148,9 @@ class BaseTx(ABC):
 
     @staticmethod
     def from_json(data) -> 'BaseTx':
-        '''
+        """
         Attempt to deserialize the transaction from a plain JSON-compatible Python dictionary.
-        '''
+        """
         if 'type' not in data:
             raise ValueError('Data dictionary is missing "type" item')
         if data['type'] not in _tx_type_registry:
@@ -155,9 +160,9 @@ class BaseTx(ABC):
         return cls(**cls.parse_json(data))
 
     def to_json(self):
-        '''
+        """
         Serialize the transaction to a plain JSON-compatible Python dictionary.
-        '''
+        """
         return {
             'type': self._type_id(),
             'id': self.derive_id(),
@@ -174,6 +179,7 @@ class BaseTx(ABC):
             'asset': self._asset_json(),
         }
 
+
 @transaction_type(0)
 class SendTx(BaseTx):
     amount: Amount
@@ -189,16 +195,16 @@ class SendTx(BaseTx):
         requester_public_key: Optional[PublicKey] = None,
         signature: Optional[Signature] = None,
         second_signature: Optional[Signature] = None,
-        signatures: List[Signature] = [],
+        signatures: Optional[List[Signature]] = None,
     ):
         super().__init__(
-            sender_public_key = sender_public_key,
-            fee = fee,
-            timestamp = timestamp,
-            requester_public_key = requester_public_key,
-            signature = signature,
-            second_signature = second_signature,
-            signatures = signatures,
+            sender_public_key=sender_public_key,
+            fee=fee,
+            timestamp=timestamp,
+            requester_public_key=requester_public_key,
+            signature=signature,
+            second_signature=second_signature,
+            signatures=signatures,
         )
         self.amount = amount
         self.recipient = recipient
@@ -230,6 +236,7 @@ class SendTx(BaseTx):
         except KeyError as err:
             raise ValueError('Data dictionary is missing "{}" item'.format(err.args[0]))
 
+
 @transaction_type(1)
 class RegisterSecondSignatureTx(BaseTx):
     second_public_key: PublicKey
@@ -243,16 +250,16 @@ class RegisterSecondSignatureTx(BaseTx):
         requester_public_key: Optional[PublicKey] = None,
         signature: Optional[Signature] = None,
         second_signature: Optional[Signature] = None,
-        signatures: List[Signature] = [],
+        signatures: Optional[List[Signature]] = None,
     ):
         super().__init__(
-            sender_public_key = sender_public_key,
-            fee = fee,
-            timestamp = timestamp,
-            requester_public_key = requester_public_key,
-            signature = signature,
-            second_signature = second_signature,
-            signatures = signatures,
+            sender_public_key=sender_public_key,
+            fee=fee,
+            timestamp=timestamp,
+            requester_public_key=requester_public_key,
+            signature=signature,
+            second_signature=second_signature,
+            signatures=signatures,
         )
         self.second_public_key = second_public_key
 
@@ -290,6 +297,7 @@ class RegisterSecondSignatureTx(BaseTx):
             'second_public_key': second_public_key,
         }
 
+
 @transaction_type(2)
 class RegisterDelegateTx(BaseTx):
     username: str
@@ -303,16 +311,16 @@ class RegisterDelegateTx(BaseTx):
         requester_public_key: Optional[PublicKey] = None,
         signature: Optional[Signature] = None,
         second_signature: Optional[Signature] = None,
-        signatures: List[Signature] = [],
+        signatures: Optional[List[Signature]] = None,
     ):
         super().__init__(
-            sender_public_key = sender_public_key,
-            fee = fee,
-            timestamp = timestamp,
-            requester_public_key = requester_public_key,
-            signature = signature,
-            second_signature = second_signature,
-            signatures = signatures,
+            sender_public_key=sender_public_key,
+            fee=fee,
+            timestamp=timestamp,
+            requester_public_key=requester_public_key,
+            signature=signature,
+            second_signature=second_signature,
+            signatures=signatures,
         )
         self.username = username
 
@@ -350,6 +358,7 @@ class RegisterDelegateTx(BaseTx):
             'username': username,
         }
 
+
 @transaction_type(3)
 class VoteTx(BaseTx):
     add_votes: List[PublicKey] = []
@@ -365,16 +374,16 @@ class VoteTx(BaseTx):
         requester_public_key: Optional[PublicKey] = None,
         signature: Optional[Signature] = None,
         second_signature: Optional[Signature] = None,
-        signatures: List[Signature] = [],
+        signatures: Optional[List[Signature]] = None,
     ):
         super().__init__(
-            sender_public_key = sender_public_key,
-            fee = fee,
-            timestamp = timestamp,
-            requester_public_key = requester_public_key,
-            signature = signature,
-            second_signature = second_signature,
-            signatures = signatures,
+            sender_public_key=sender_public_key,
+            fee=fee,
+            timestamp=timestamp,
+            requester_public_key=requester_public_key,
+            signature=signature,
+            second_signature=second_signature,
+            signatures=signatures,
         )
         self.add_votes = add_votes
         self.remove_votes = remove_votes

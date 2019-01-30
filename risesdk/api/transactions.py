@@ -1,5 +1,4 @@
 from typing import Optional, List, Type, NamedTuple
-import requests
 from risesdk.protocol import (
     Timestamp,
     Amount,
@@ -8,6 +7,7 @@ from risesdk.protocol import (
     BaseTx,
 )
 from risesdk.api.base import BaseAPI, APIError
+
 
 class TransactionInfo(object):
     tx_id: str
@@ -25,6 +25,7 @@ class TransactionInfo(object):
         self.confirmations = int(raw['confirmations'])
         self.tx = BaseTx.from_json(raw)
 
+
 class PendingTransactionInfo(object):
     tx_id: str
     tx: BaseTx
@@ -32,6 +33,7 @@ class PendingTransactionInfo(object):
     def __init__(self, raw):
         self.tx_id = str(raw['id'])
         self.tx = BaseTx.from_json(raw)
+
 
 class TransactionsResult(object):
     transactions: List[TransactionInfo]
@@ -41,6 +43,7 @@ class TransactionsResult(object):
         self.transactions = [TransactionInfo(t) for t in raw['transactions']]
         self.count = int(raw['count'])
 
+
 class PendingTransactionsResult(object):
     transactions: List[PendingTransactionInfo]
     count: int
@@ -48,6 +51,7 @@ class PendingTransactionsResult(object):
     def __init__(self, raw):
         self.transactions = [PendingTransactionInfo(t) for t in raw['transactions']]
         self.count = int(raw['count'])
+
 
 class TransactionsCountResult(object):
     confirmed: int
@@ -59,13 +63,16 @@ class TransactionsCountResult(object):
         self.queued = int(raw['queued'])
         self.unconfirmed = int(raw['unconfirmed'])
 
+
 class RejectedTransaction(NamedTuple):
     tx: BaseTx
     reason: str
 
+
 class TransactionAddResult(NamedTuple):
     accepted: List[BaseTx]
     rejected: List[RejectedTransaction]
+
 
 class TransactionsAPI(BaseAPI):
     def get_transactions(
@@ -108,17 +115,22 @@ class TransactionsAPI(BaseAPI):
             'and:type': None if and__type_cls is None else and__type_cls._type_id(),
             'senderId': None if sender is None else str(sender),
             'and:senderId': None if and__sender is None else str(and__sender),
-            'senderPublicKey': None if sender_public_key is None
+            'senderPublicKey':
+                None if sender_public_key is None
                 else sender_public_key.hex(),
-            'and:senderPublicKey': None if and__sender_public_key is None
+            'and:senderPublicKey':
+                None if and__sender_public_key is None
                 else and__sender_public_key.hex(),
             'recipientId': None if recipient is None else str(recipient),
             'and:recipientId': None if and__recipient is None else str(and__recipient),
-            'senderPublicKeys': None if sender_public_keys is None
+            'senderPublicKeys':
+                None if sender_public_keys is None
                 else ','.join([k.hex() for k in sender_public_keys]),
-            'senderIds': None if senders is None
+            'senderIds':
+                None if senders is None
                 else ','.join([str(a) for a in senders]),
-            'recipientIds': None if recipients is None
+            'recipientIds':
+                None if recipients is None
                 else ','.join([str(a) for a in recipients]),
             'fromHeight': from_height,
             'and:fromHeight': and__from_height,
@@ -147,7 +159,6 @@ class TransactionsAPI(BaseAPI):
             tx_json = tx.to_json()
             tx_by_id[str(tx_json['id'])] = tx
             tx_jsons.append(tx_json)
-
 
         r = self._put('/transactions', data={
             'transactions': tx_jsons,
